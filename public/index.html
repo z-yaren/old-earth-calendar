@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Old Earth Uygunluk Takvimi</title>
+<style>
+:root{
+  --bg:#faf7f2; --surface:#fff; --text:#2a2118; --muted:#7a6e60; --line:#e6dfd3; --accent:#8b2e2e;
+  --yes:#3b9a5f; --maybe:#e0a526; --no:#c9534a; --gold:#d4a017; --weekend:#f3eee5; --mine:#fbf1ee;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#17130f; --surface:#221c16; --text:#f1e9dc; --muted:#a79a88; --line:#3a3128; --accent:#e0836f;
+    --yes:#4cae72; --maybe:#d8a13a; --no:#d86a60; --gold:#f0c24b; --weekend:#1d1813; --mine:#2c211c;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:18px 14px 40px}
+h1{font:700 1.5rem/1.2 Georgia,"Times New Roman",serif;margin:0 0 2px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit;min-width:180px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.nav button{border:1px solid var(--line);background:var(--bg);color:var(--text);padding:8px 12px;border-radius:999px;font:inherit;font-size:.88rem;cursor:pointer}
+.seg button[aria-pressed=true]{color:#fff;border-color:transparent}
+.seg button[data-m=y][aria-pressed=true]{background:var(--yes)}
+.seg button[data-m=m][aria-pressed=true]{background:var(--maybe)}
+.seg button[data-m=n][aria-pressed=true]{background:var(--no)}
+.seg button[data-m=c][aria-pressed=true]{background:var(--muted)}
+.seg button:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+.hint{color:var(--muted);font-size:.82rem;margin:8px 0 0}
+.warn{background:#fff3cd;color:#5c4400;border:1px solid #e8cf80;border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:14px}
+.status{font-size:.82rem;color:var(--no);min-height:1.2em;margin:6px 0 0}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap}
+.nav .mid{display:flex;gap:8px}
+
+/* matris */
+.scroller{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.board{width:max-content;min-width:100%;user-select:none;-webkit-user-select:none}
+.r{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
+.r:last-child{border-bottom:none}
+.nm{position:sticky;left:0;z-index:2;width:104px;flex:none;background:var(--surface);padding:0 10px;display:flex;align-items:center;font-weight:600;font-size:.88rem;border-right:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r.mine .nm{background:var(--mine);color:var(--accent)}
+.dd{display:flex}
+.c{width:34px;height:38px;flex:none;padding:7px 0;position:relative}
+.c.we{background:var(--weekend)}
+.c.past{opacity:.45}
+.c.today::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;border-left:2px solid var(--accent);pointer-events:none}
+.c i{display:block;height:100%;width:100%}
+.c.y i{background:var(--yes)}.c.m i{background:var(--maybe)}.c.n i{background:var(--no)}
+.c.first i{border-top-left-radius:8px;border-bottom-left-radius:8px;margin-left:2px;width:calc(100% - 2px)}
+.c.last i{border-top-right-radius:8px;border-bottom-right-radius:8px;margin-right:2px;width:calc(100% - 2px)}
+.c.first.last i{width:calc(100% - 4px)}
+.r.mine .dd .c{background-image:linear-gradient(var(--mine),var(--mine))}
+.r.mine .dd .c.we{background-image:none;background-color:var(--weekend)}
+.r.mine .c{cursor:pointer;touch-action:none}
+.r.mine .c.past{cursor:default}
+.r.mine .c:not(.y):not(.m):not(.n):not(.past):hover{background:var(--line)}
+.head .nm{background:var(--surface)}
+.head.mon{height:26px}
+.mon .m{flex:none;font-size:.78rem;color:var(--muted);padding:5px 8px;text-transform:capitalize;border-left:1px solid var(--line);overflow:hidden;white-space:nowrap}
+.head.day .c{height:44px;padding:4px 0;text-align:center;font-size:.7rem;color:var(--muted);line-height:1.2}
+.head.day .c b{display:block;font-size:.88rem;color:var(--text)}
+.tot .nm{color:var(--muted);font-weight:500;font-size:.8rem}
+.tot .c{display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;padding:0}
+.tot .c.all{background:var(--gold);color:#fff}
+.tot .c.almost{background:color-mix(in srgb,var(--gold) 28%,transparent)}
+.tot .c.some{background:color-mix(in srgb,var(--yes) 20%,transparent)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.best{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.best li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.best li.all{border-color:var(--gold)}
+.best .d{font-weight:600;white-space:nowrap}
+.best .s{font-size:.82rem;color:var(--muted);text-align:right}
+.empty{color:var(--muted);font-size:.9rem}
+input[type=password]{flex:1;min-width:180px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+.btn{border:none;background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Old Earth Uygunluk Takvimi</h1>
+  <p class="sub">Adını seç, müsait olduğun günleri boya. Ortak günler en altta görünür.</p>
+
+  <div class="warn" id="warn" hidden>Sunucuya ulaşılamıyor. Bağlantını kontrol edip sayfayı yenile.</div>
+
+  <div class="card" id="gate" hidden>
+    <h2>Grup şifresi</h2>
+    <div class="row"><input type="password" id="pw" placeholder="Grup şifresi" autocomplete="current-password"><button class="btn" id="login">Giriş</button></div>
+    <p class="status" id="gateStatus"></p>
+  </div>
+
+  <div id="app" hidden>
+
+  <div class="card">
+    <h2>Sen kimsin?</h2>
+    <div class="row"><select id="who"></select></div>
+    <div class="seg" id="modes" style="margin-top:10px">
+      <button data-m="y" aria-pressed="true">✓ Müsait</button>
+      <button data-m="m" aria-pressed="false">? Belki</button>
+      <button data-m="n" aria-pressed="false">✗ Müsait değil</button>
+      <button data-m="c" aria-pressed="false">Temizle</button>
+    </div>
+    <p class="hint">Bir mod seç, sonra kendi satırındaki günlere dokun veya sürükle. Diğer satırlar sadece görüntülenir.</p>
+    <p class="status" id="status"></p>
+  </div>
+
+  <div class="card">
+    <div class="nav">
+      <button id="prev">‹ Önceki</button>
+      <div class="mid"><button id="today">Bugün</button></div>
+      <button id="next">Sonraki ›</button>
+    </div>
+    <div class="scroller"><div class="board" id="board"></div></div>
+    <div class="legend">
+      <span><i style="background:var(--yes)"></i>müsait</span>
+      <span><i style="background:var(--maybe)"></i>belki</span>
+      <span><i style="background:var(--no)"></i>müsait değil</span>
+      <span><i style="background:var(--gold)"></i>herkes müsait</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>En uygun günler</h2>
+    <ul class="best" id="best"></ul>
+    <p class="hint" id="pending"></p>
+  </div>
+  </div>
+</div>
+
+<script>
+const CW = 34, SPAN = 28;
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2, "0");
+const dkey = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+const todayKey = dkey(new Date());
+function mondayOf(d){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+
+let start = mondayOf(new Date());
+let PLAYERS = [], raw = {};
+let mode = "y", me = null, data = {}, dirty = false, saving = false, timer = null, painting = false;
+let KEY = "";
+try { me = localStorage.getItem("dnd-me"); KEY = localStorage.getItem("dnd-key") || ""; } catch(e){}
+
+function setStatus(s){ $("#status").textContent = s || ""; }
+
+function rebuild(){
+  const next = {};
+  PLAYERS.forEach(p => next[p] = raw[p] || {});
+  if (me && (dirty || saving) && data[me]) next[me] = data[me];
+  data = next;
+  render();
+}
+function setPlayers(names){
+  PLAYERS = names;
+  if (!PLAYERS.includes(me)) me = null;
+  buildSelect(); updateEnabled();
+}
+
+/* ---- sunucu ---- */
+async function api(path, opts){
+  const r = await fetch(path, Object.assign({}, opts, {headers: {"X-Group-Key": KEY, "Content-Type": "application/json"}}));
+  if (r.status === 401) { const e = new Error("auth"); e.auth = true; throw e; }
+  if (!r.ok) throw new Error("http " + r.status);
+  return r.json();
+}
+function showGate(msg){
+  $("#gate").hidden = false; $("#app").hidden = true; $("#gateStatus").textContent = msg || "";
+}
+async function load(){
+  if (painting) return;
+  const hadKey = !!KEY;
+  try {
+    const j = await api("/api/state");
+    try { localStorage.setItem("dnd-key", KEY); } catch(e){}
+    $("#gate").hidden = true; $("#app").hidden = false; $("#warn").hidden = true;
+    const names = Array.isArray(j.players) ? j.players.filter(x => typeof x === "string") : [];
+    if (JSON.stringify(names) !== JSON.stringify(PLAYERS)) setPlayers(names);
+    raw = j.avail && typeof j.avail === "object" ? j.avail : {};
+    rebuild();
+  } catch(e){
+    if (e.auth) {
+      KEY = ""; try { localStorage.removeItem("dnd-key"); } catch(_){}
+      showGate(hadKey ? "Şifre yanlış." : "");
+    } else {
+      $("#warn").hidden = false;
+    }
+  }
+}
+
+function schedule(){ dirty = true; clearTimeout(timer); timer = setTimeout(flush, 500); }
+async function flush(){
+  if (!KEY || !me) return;
+  if (saving) { timer = setTimeout(flush, 300); return; }
+  dirty = false; saving = true;
+  try { await api("/api/me", {method: "PUT", body: JSON.stringify({player: me, days: data[me] || {}})}); setStatus(""); }
+  catch(e){
+    if (e.auth) { dirty = false; KEY = ""; showGate("Oturum geçersiz, şifreyi tekrar gir."); }
+    else { dirty = true; setStatus("Kaydedilemedi, tekrar denenecek."); }
+  }
+  saving = false;
+  if (dirty && KEY) timer = setTimeout(flush, 2000);
+}
+
+function apply(k){
+  if (!me || k < todayKey) return;
+  const days = data[me] || (data[me] = {});
+  if (mode === "c") { if (days[k] === undefined) return; delete days[k]; }
+  else { if (days[k] === mode) return; days[k] = mode; }
+  schedule(); render();
+}
+
+/* ---- çizim ---- */
+function daysArr(){ const a = []; for (let i = 0; i < SPAN; i++){ const d = new Date(start); d.setDate(d.getDate() + i); a.push(d); } return a; }
+
+function render(){
+  const ds = daysArr(), keys = ds.map(dkey), board = $("#board");
+  board.textContent = "";
+  const N = PLAYERS.length;
+
+  // ay satırı
+  const mr = el("div", "r head mon"); mr.append(el("div", "nm"));
+  const mw = el("div", "dd");
+  for (let i = 0; i < ds.length;){
+    let j = i; while (j < ds.length && ds[j].getMonth() === ds[i].getMonth()) j++;
+    const m = el("div", "m"); m.style.width = (j - i) * CW + "px";
+    m.textContent = ds[i].toLocaleDateString("tr-TR", {month: "long", year: "numeric"});
+    mw.append(m); i = j;
+  }
+  mr.append(mw); board.append(mr);
+
+  // gün satırı
+  const dr = el("div", "r head day"); dr.append(el("div", "nm"));
+  const dw = el("div", "dd");
+  ds.forEach((d, i) => {
+    const c = el("div", "c" + ([0,6].includes(d.getDay()) ? " we" : "") + (keys[i] === todayKey ? " today" : "") + (keys[i] < todayKey ? " past" : ""));
+    c.append(d.toLocaleDateString("tr-TR", {weekday: "short"}).slice(0, 3));
+    const b = document.createElement("b"); b.textContent = d.getDate(); c.append(b);
+    dw.append(c);
+  });
+  dr.append(dw); board.append(dr);
+
+  const order = me ? [me].concat(PLAYERS.filter(p => p !== me)) : PLAYERS;
+  order.forEach(p => {
+    const days = data[p] || {};
+    const r = el("div", "r" + (p === me ? " mine" : ""));
+    const nm = el("div", "nm"); nm.textContent = p; nm.title = p; r.append(nm);
+    const dd = el("div", "dd");
+    ds.forEach((d, i) => {
+      const k = keys[i], v = days[k];
+      let cls = "c" + ([0,6].includes(d.getDay()) ? " we" : "") + (k === todayKey ? " today" : "") + (k < todayKey ? " past" : "");
+      if (v) {
+        cls += " " + v;
+        if (!(i > 0 && days[keys[i-1]] === v)) cls += " first";
+        if (!(i < ds.length - 1 && days[keys[i+1]] === v)) cls += " last";
+      }
+      const c = el("div", cls); c.dataset.d = k;
+      if (v) c.append(document.createElement("i"));
+      dd.append(c);
+    });
+    r.append(dd); board.append(r);
+  });
+
+  // toplam satırı
+  const tr = el("div", "r tot"); const tn = el("div", "nm"); tn.textContent = "Müsait sayısı"; tr.append(tn);
+  const tw = el("div", "dd");
+  ds.forEach((d, i) => {
+    const k = keys[i]; let y = 0, m = 0, n = 0;
+    PLAYERS.forEach(p => { const v = (data[p] || {})[k]; if (v === "y") y++; else if (v === "m") m++; else if (v === "n") n++; });
+    let cls = "c" + ([0,6].includes(d.getDay()) ? " we" : "") + (k < todayKey ? " past" : "");
+    if (k >= todayKey && N > 0) {
+      if (y === N) cls += " all"; else if (n === 0 && y + m === N && y > 0) cls += " almost"; else if (y > 0) cls += " some";
+    }
+    const c = el("div", cls); c.textContent = y || ""; c.title = y + " müsait, " + m + " belki, " + n + " olmaz";
+    tw.append(c);
+  });
+  tr.append(tw); board.append(tr);
+
+  renderBest();
+}
+
+function renderBest(){
+  const ul = $("#best"); ul.textContent = "";
+  const N = PLAYERS.length, set = {};
+  PLAYERS.forEach(p => Object.keys(data[p] || {}).forEach(k => { if (k >= todayKey) set[k] = 1; }));
+  const list = Object.keys(set).map(k => {
+    const c = {k, y: 0, m: 0, n: 0, notYes: []};
+    PLAYERS.forEach(p => { const v = (data[p] || {})[k];
+      if (v === "y") c.y++; else { if (v === "m") c.m++; else if (v === "n") c.n++; c.notYes.push(p + (v === "m" ? " (belki)" : v === "n" ? " (olmaz)" : " (?)")); }
+    });
+    return c;
+  }).filter(c => c.y > 0).sort((a, b) => (a.n > 0) - (b.n > 0) || b.y - a.y || b.m - a.m || (a.k < b.k ? -1 : 1)).slice(0, 6);
+
+  if (!list.length){ const li = el("li", "empty"); li.textContent = "Henüz ortak gün yok. Müsait olduğun günleri boya."; ul.append(li); }
+  list.forEach(c => {
+    const li = el("li", c.y === N ? "all" : "");
+    const p = c.k.split("-");
+    const d = el("span", "d"); d.textContent = new Date(+p[0], +p[1]-1, +p[2]).toLocaleDateString("tr-TR", {weekday: "long", day: "numeric", month: "long"});
+    const s = el("span", "s");
+    s.textContent = c.y === N ? "Herkes müsait ★" : c.y + "/" + N + " müsait · Eksik: " + c.notYes.join(", ");
+    li.append(d, s); ul.append(li);
+  });
+
+  const waiting = PLAYERS.filter(p => !Object.keys(data[p] || {}).length);
+  $("#pending").textContent = waiting.length ? "Henüz hiç işaretlemeyenler: " + waiting.join(", ") : "";
+}
+
+/* ---- olaylar ---- */
+const who = $("#who");
+function buildSelect(){
+  who.textContent = "";
+  const ph = document.createElement("option"); ph.value = ""; ph.textContent = "Adını seç…"; who.append(ph);
+  PLAYERS.forEach(p => { const o = document.createElement("option"); o.value = p; o.textContent = p; who.append(o); });
+  who.value = me || "";
+}
+function updateEnabled(){ document.querySelectorAll("#modes button").forEach(b => b.disabled = !me); }
+who.addEventListener("change", () => {
+  me = who.value || null;
+  try { if (me) localStorage.setItem("dnd-me", me); else localStorage.removeItem("dnd-me"); } catch(e){}
+  updateEnabled(); render();
+});
+$("#modes").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  mode = b.dataset.m;
+  document.querySelectorAll("#modes button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+});
+$("#prev").addEventListener("click", () => { start.setDate(start.getDate() - 14); render(); });
+$("#next").addEventListener("click", () => { start.setDate(start.getDate() + 14); render(); });
+$("#today").addEventListener("click", () => { start = mondayOf(new Date()); render(); });
+
+const board = $("#board");
+board.addEventListener("pointerdown", e => {
+  const c = e.target.closest(".mine .c[data-d]"); if (!c) return;
+  painting = true; apply(c.dataset.d);
+});
+window.addEventListener("pointermove", e => {
+  if (!painting) return;
+  const t = document.elementFromPoint(e.clientX, e.clientY);
+  const c = t && t.closest && t.closest(".mine .c[data-d]"); if (c) apply(c.dataset.d);
+});
+window.addEventListener("pointerup", () => painting = false);
+window.addEventListener("pointercancel", () => painting = false);
+
+$("#login").addEventListener("click", () => { KEY = $("#pw").value.trim(); if (KEY) load(); });
+$("#pw").addEventListener("keydown", e => { if (e.key === "Enter") $("#login").click(); });
+setInterval(() => { if (document.visibilityState === "visible" && KEY && !dirty && !saving) load(); }, 30000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && KEY && !dirty && !saving) load(); });
+
+updateEnabled();
+render();
+if (KEY) load(); else showGate("");
+</script>
+</body>
+</html>
