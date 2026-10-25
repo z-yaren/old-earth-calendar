@@ -3,42 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Old Earth Uygunluk Takvimi</title>
-<style>
-:root{
-  --bg:#faf7f2; --surface:#fff; --text:#2a2118; --muted:#7a6e60; --line:#e6dfd3; --accent:#8b2e2e;
-  --yes:#3b9a5f; --maybe:#e0a526; --no:#c9534a; --gold:#d4a017; --weekend:#f3eee5; --mine:#fbf1ee;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#17130f; --surface:#221c16; --text:#f1e9dc; --muted:#a79a88; --line:#3a3128; --accent:#e0836f;
-    --yes:#4cae72; --maybe:#d8a13a; --no:#d86a60; --gold:#f0c24b; --weekend:#1d1813; --mine:#2c211c;
-    color-scheme:dark;
-  }
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1000px;margin:0 auto;padding:18px 14px 40px}
-h1{font:700 1.5rem/1.2 Georgia,"Times New Roman",serif;margin:0 0 2px;color:var(--accent)}
-.sub{color:var(--muted);margin:0 0 14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
-.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit;min-width:180px}
-.seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button,.nav button{border:1px solid var(--line);background:var(--bg);color:var(--text);padding:8px 12px;border-radius:999px;font:inherit;font-size:.88rem;cursor:pointer}
-.seg button[aria-pressed=true]{color:#fff;border-color:transparent}
-.seg button[data-m=y][aria-pressed=true]{background:var(--yes)}
-.seg button[data-m=m][aria-pressed=true]{background:var(--maybe)}
-.seg button[data-m=n][aria-pressed=true]{background:var(--no)}
-.seg button[data-m=c][aria-pressed=true]{background:var(--muted)}
-.seg button:disabled,select:disabled{opacity:.5;cursor:not-allowed}
-.hint{color:var(--muted);font-size:.82rem;margin:8px 0 0}
-.warn{background:#fff3cd;color:#5c4400;border:1px solid #e8cf80;border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:14px}
-.status{font-size:.82rem;color:var(--no);min-height:1.2em;margin:6px 0 0}
-.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap}
-.nav .mid{display:flex;gap:8px}
+  <title>Old Earth Uygunluk Takvimi</title>
+  <style>
+    :root{
+      --bg:#fffaf2; --surface:#ffffff; --text:#3a3028; --muted:#8a7d6e; --line:#efe6d8; --accent:#d9694f;
+      --yes:#7fcf9c; --maybe:#f6cf65; --no:#f19a90; --gold:#f5c542; --weekend:#faf4e9; --mine:#fff0e8;
+      color-scheme:light;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    .wrap{max-width:1000px;margin:0 auto;padding:18px 14px 40px}
+    h1{font:700 1.5rem/1.2 Georgia,"Times New Roman",serif;margin:0 0 2px;color:var(--accent)}
+    .sub{color:var(--muted);margin:0 0 14px}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+    .card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit;min-width:180px}
+    .seg{display:flex;gap:6px;flex-wrap:wrap}
+    .seg button,.nav button{border:1px solid var(--line);background:var(--bg);color:var(--text);padding:8px 12px;border-radius:999px;font:inherit;font-size:.88rem;cursor:pointer}
+    .seg button[aria-pressed=true]{border-color:transparent}
+    .seg button[data-m=y][aria-pressed=true]{background:var(--yes);color:#12432a}
+    .seg button[data-m=m][aria-pressed=true]{background:var(--maybe);color:#4a3a10}
+    .seg button[data-m=n][aria-pressed=true]{background:var(--no);color:#5a1b14}
+    .seg button[data-m=c][aria-pressed=true]{background:var(--muted);color:#fff}
+    .seg button:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+    .hint{color:var(--muted);font-size:.82rem;margin:8px 0 0}
+    .warn{background:#fff3cd;color:#5c4400;border:1px solid #e8cf80;border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:14px}
+    .status{font-size:.82rem;color:#c0463a;min-height:1.2em;margin:6px 0 0}
+    .nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap}
+    .nav .mid{display:flex;gap:8px}
 
 /* matris */
 .scroller{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
