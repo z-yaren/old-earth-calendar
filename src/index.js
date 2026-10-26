@@ -73,7 +73,9 @@ export default {
             try { body = JSON.parse(text); } catch (e) { return json({ error: "Invalid JSON" }, 400); }
             if (!body || !players.includes(body.player)) return json({ error: "Unknown player" }, 400);
             const days = cleanDays(body.days);
-            if (Object.keys(days).length > 400) return json({ error: "Too many days" }, 400);
+            const cutoff = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+            for (const k of Object.keys(days)) if (k < cutoff) delete days[k];
+            if (Object.keys(days).length > 1000) return json({ error: "Too many days" }, 400);
             await env.DND_KV.put("avail:" + body.player, JSON.stringify(days));
             return json({ ok: true });
         }
